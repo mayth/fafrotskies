@@ -12,6 +12,8 @@ fafrotskies [problem file]
 ```
 
 # Problem File
+It's YAML file.
+
 ```yaml
 name: Problem Name
 description: |
