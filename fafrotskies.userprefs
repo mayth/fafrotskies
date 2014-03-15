@@ -1,0 +1,27 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="fafrotskies/Problem.cs">
+    <Files>
+      <File FileName="fafrotskies/Program.cs" Line="31" Column="1" />
+      <File FileName="fafrotskies/Problem.cs" Line="52" Column="14" />
+      <File FileName="fafrotskies/Case.cs" Line="23" Column="10" />
+    </Files>
+    <Pads>
+      <Pad Id="ClassPad">
+        <State expanded="True">
+          <Node name="fafrotskies" expanded="True">
+            <Node name="References" expanded="True">
+              <Node name="/Users/mayth/devel/fafrotskies/fafrotskies/../packages/YamlDotNet.3.1.0/lib/net35/YamlDotNet.dll" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/mayth/devel/fafrotskies/fafrotskies/Problem.cs" line="51" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
