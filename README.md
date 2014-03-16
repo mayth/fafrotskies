@@ -4,7 +4,17 @@ fafrotskies
 ringing ringing terminal
 
 # Requirements
-.NET Framework 4 or later. This also works on Mono!
+* .NET Framework 4 or later. (also works on Mono!)
+* [NuGet](http://www.nuget.org)
+
+## Dependencies
+If you are a Visual Studio lover, all dependencies will be resolved automatically. So, you build this with VS, all things are done!
+
+Otherwise (for Mono users), first, you should get NuGet client (see [NuGet's document](http://docs.nuget.org/docs/start-here/installing-nuget)). After that, in the solution root directory, do:
+
+```
+% mono nuget.exe restore fafrotskies.sln
+```
 
 # Usage
 ```
