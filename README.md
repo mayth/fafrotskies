@@ -69,6 +69,14 @@ Flag is FLAG{123456789abcdef}
 Connection closed by foreign host.
 ```
 
+# Copyright
+Copyright 2014 mayth (Mei Akizuru; [@maytheplic](https://twitter.com/maytheplic))  
+Licensed under the MIT License. See LICENSE.
+
+## Packages' License
+* [NDesk.Options](http://www.ndesk.org/Options) is licensed under the MIT License.
+* [YamlDotNet](http://www.aaubry.net/page/YamlDotNet) is licensed under the MIT License. (See also: [project's license page](http://www.aaubry.net/page/YamlDotNet-License))
+
 # Fafrotskies?
 
 ＼　　／ 　 この幻想郷では常識に囚われては  
