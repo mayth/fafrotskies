@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace fafrotskies
+namespace Fafrotskies
 {
     public enum MatchType
     {

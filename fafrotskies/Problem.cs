@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using YamlDotNet.Serialization;
 
-namespace fafrotskies
+namespace Fafrotskies
 {
     public class Problem
     {

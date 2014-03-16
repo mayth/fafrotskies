@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{010D06E6-C1B3-4BCB-A730-ED6352C638EE}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>fafrotskies</RootNamespace>
+    <RootNamespace>Fafrotskies</RootNamespace>
     <AssemblyName>fafrotskies</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -21,7 +21,6 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>/Users/mayth/devel/fafrotskies/fafrotskies/bin/Debug/test.yaml</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>

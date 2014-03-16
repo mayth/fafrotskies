@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace fafrotskies
+namespace Fafrotskies
 {
     class MainClass
     {
