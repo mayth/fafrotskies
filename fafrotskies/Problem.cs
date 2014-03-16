@@ -83,7 +83,7 @@ namespace fafrotskies
                 else
                     caseLimit = limit;
 
-                cases.Add(Case.Create((string)d["problem"], d["answer"], caseLimit));
+                cases.Add(Case.Create(((string)d["problem"]).Trim(), d["answer"], caseLimit));
             }
             return new Problem((string)obj["name"], (string)obj["description"], (string)obj["flag"], cases);
         }
