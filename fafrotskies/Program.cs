@@ -25,6 +25,7 @@ namespace fafrotskies
             Console.WriteLine("Cases:");
             foreach (var pCase in problem.Cases)
             {
+                Console.WriteLine("  Limit: {0}", pCase.Limit);
                 Console.WriteLine("  Problem: {0}", pCase.Problem);
             }
         }

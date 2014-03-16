@@ -12,32 +12,39 @@ namespace fafrotskies
 
         private readonly object answer;
 
+        private readonly int limit;
+        public int Limit
+        {
+            get { return limit; }
+        }
+
         private readonly MatchType matchType;
         public MatchType MatchType
         {
             get { return matchType; }
         }
 
-        private Case(string problem, object answer, MatchType type)
+        private Case(string problem, object answer, int limit, MatchType type)
         {
             this.problem = problem;
-            this.matchType = type;
             this.answer = answer;
+            this.limit = limit;
+            this.matchType = type;
         }
 
-        public static Case Create(string problem, object answer)
+        public static Case Create(string problem, object answer, int limit)
         {
             string s = (string)answer;
 
             int i;
             if (int.TryParse(s, out i))
-                return new Case(problem, i, MatchType.Integer);
+                return new Case(problem, i, limit, MatchType.Integer);
 
             double d;
             if (double.TryParse(s, out d))
-                return new Case(problem, d, MatchType.Float);
+                return new Case(problem, d, limit, MatchType.Float);
 
-            return new Case(problem, s, MatchType.String);
+            return new Case(problem, s, limit, MatchType.String);
         }
 
         public bool Check(object answer)

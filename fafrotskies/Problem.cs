@@ -7,6 +7,8 @@ namespace fafrotskies
 {
     public class Problem
     {
+        public static readonly int DefaultLimit = 10;
+
         private readonly string name;
         public string Name
         {
@@ -51,6 +53,15 @@ namespace fafrotskies
             {
                 throw new InvalidOperationException("The given yaml's root is not hash (dictionary).");
             }
+
+            // read limit
+            object limitObj;
+            int limit;
+            if (obj.TryGetValue("limit", out limitObj))
+                limit = int.Parse((string)limitObj);
+            else
+                limit = DefaultLimit;
+
             var yamlCases = obj["cases"] as List<object>;
             if (yamlCases == null)
             {
@@ -64,7 +75,15 @@ namespace fafrotskies
                 {
                     throw new InvalidOperationException("Failed to deserialize 'case'.");
                 }
-                cases.Add(Case.Create((string)d["problem"], d["answer"]));
+
+                object caseLimitObj;
+                int caseLimit;
+                if (d.TryGetValue("limit", out caseLimitObj))
+                    caseLimit = int.Parse((string)caseLimitObj);
+                else
+                    caseLimit = limit;
+
+                cases.Add(Case.Create((string)d["problem"], d["answer"], caseLimit));
             }
             return new Problem((string)obj["name"], (string)obj["description"], (string)obj["flag"], cases);
         }
