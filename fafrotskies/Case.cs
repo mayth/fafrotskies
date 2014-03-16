@@ -52,11 +52,17 @@ namespace fafrotskies
             switch (MatchType)
             {
                 case MatchType.String:
-                    return (answer is string && (string)answer == (string)this.answer);
+                    return answer.ToString() == (string)this.answer;
                 case MatchType.Integer:
-                    return (answer is int && (int)answer == (int)this.answer);
+                    {
+                        int i;
+                        return int.TryParse(answer.ToString(), out i) && i == (int)this.answer;
+                    }
                 case MatchType.Float:
-                    return (answer is double && (double)answer == (double)this.answer);
+                    {
+                        double d;
+                        return double.TryParse(answer.ToString(), out d) && d == (double)this.answer;
+                    }
             }
             throw new InvalidOperationException("unknown `MatchType`.");
         }
