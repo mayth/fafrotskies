@@ -3,46 +3,67 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using fafrotskies;
 
 namespace fafrotskies
 {
     public class Server
     {
-        private int port;
-        private Problem problem;
+        public int Port { get; private set; }
+        public Problem Problem { get; private set; }
+        private Task listenTask;
         private bool isRunning;
+        private List<Task> communicateTasks;
+        private System.Threading.CancellationTokenSource cancelTokenSource;
 
         public Server(int port, Problem problem)
         {
-            this.port = port;
-            this.problem = problem;
+            this.Port = port;
+            this.Problem = problem;
             isRunning = false;
+            communicateTasks = new List<Task>();
         }
 
         public void Start()
         {
-            var listener = new TcpListener(System.Net.IPAddress.Any, port);
+            if (isRunning)
+            {
+                throw new InvalidOperationException("Server is already started.");
+            }
+
+            cancelTokenSource = new System.Threading.CancellationTokenSource();
+            var listener = new TcpListener(System.Net.IPAddress.Any, Port);
             listener.Start();
             isRunning = true;
-            Task.Factory.StartNew(
-                () =>
+            listenTask = Task.Factory.StartNew(
+                async () =>
                 {
                     while (isRunning)
                     {
-                        var client = listener.AcceptTcpClient();
+                        var client = await listener.AcceptTcpClientAsync();
                         Console.WriteLine("accepted.");
-                        Task.Factory.StartNew(Communicate, client);
+                        communicateTasks.Add(Task.Factory.StartNew(Communicate, client, cancelTokenSource.Token));
                     }
                 });
         }
 
         public void Stop()
         {
-            isRunning = false;
+            if (isRunning)
+            {
+                Console.WriteLine("Shutting down listener...");
+                isRunning = false;
+                listenTask.Wait();
+                listenTask.Dispose();
+                Console.WriteLine("Closing all connections...");
+                cancelTokenSource.Cancel();
+                communicateTasks.Clear();
+            }
         }
 
-        void Communicate(object obj)
+        async void Communicate(object obj)
         {
+            var cancelToken = cancelTokenSource.Token;
             var client = (TcpClient)obj;
             var isCleared = true;
             using (client)
@@ -52,18 +73,34 @@ namespace fafrotskies
             {
                 writer.WriteLine("Welcome. We are the fafrotskies.");
                 writer.WriteLine();
-                writer.WriteLine("===== {0} =====", problem.Name);
-                writer.WriteLine(problem.Description);
+                writer.WriteLine("===== {0} =====", Problem.Name);
+                writer.WriteLine(Problem.Description);
                 writer.WriteLine();
                 writer.Flush();
-                foreach (var c in problem.Cases.Select((v, i) => new {Index = i, Case = v}))
+                foreach (var c in Problem.Cases.Select((v, i) => new {Index = i, Case = v}))
                 {
+                    if (cancelToken.IsCancellationRequested)
+                    {
+                        writer.WriteLine("Sorry, the server is now shutting down...");
+                        writer.Flush();
+                        cancelToken.ThrowIfCancellationRequested();
+                    }
+
                     writer.WriteLine("#{0}", c.Index + 1);
                     writer.WriteLine(c.Case.Problem);
                     writer.Flush();
-                    var answer = reader.ReadLine();
+                    string answer = await reader.ReadLineAsync(c.Case.Limit * 1000, cancelToken);
+                    if (answer == null)
+                    {
+                        writer.WriteLine("oops...");
+                        writer.Flush();
+                        isCleared = false;
+                        break;
+                    }
                     if (!c.Case.Check(answer))
                     {
+                        writer.WriteLine("wrong answer!");
+                        writer.Flush();
                         isCleared = false;
                         break;
                     }
@@ -71,13 +108,9 @@ namespace fafrotskies
                 if (isCleared)
                 {
                     writer.WriteLine("Congratulations!");
-                    writer.WriteLine("Flag is {0}", problem.Flag);
+                    writer.WriteLine("Flag is {0}", Problem.Flag);
+                    writer.Flush();
                 }
-                else
-                {
-                    writer.WriteLine("Oops...");
-                }
-                writer.Flush();
             }
         }
     }

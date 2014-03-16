@@ -48,6 +48,7 @@
     <Compile Include="Case.cs" />
     <Compile Include="MatchType.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="StreamReaderEx.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
