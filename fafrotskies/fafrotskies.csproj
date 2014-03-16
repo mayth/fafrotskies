@@ -37,6 +37,9 @@
     <Reference Include="YamlDotNet">
       <HintPath>..\packages\YamlDotNet.3.1.0\lib\net35\YamlDotNet.dll</HintPath>
     </Reference>
+    <Reference Include="NDesk.Options">
+      <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -44,6 +47,7 @@
     <Compile Include="Problem.cs" />
     <Compile Include="Case.cs" />
     <Compile Include="MatchType.cs" />
+    <Compile Include="Server.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
