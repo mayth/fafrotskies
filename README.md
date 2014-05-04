@@ -32,13 +32,15 @@ description: |
   Let's study elementary mathemathics!
 stages:
   -
-  	num: 4
-  	clear_message: Stage 1 cleared. Flag is FLAG{STAGE_ONE}
+    num: 4
+    clear_message: Stage 1 cleared. Flag is FLAG{STAGE_ONE}
   -
-  	num: 2
+    num: 2
+    enter_message: Okay! Keep goin'
   -
-  	num: 1
-  	clear_message: Complete! Flag is FLAG{CLEAR}
+    num: 1
+    enter_message: The LAST stage!
+    clear_message: Complete! Flag is FLAG{CLEAR}
 limit: 10
 cases:
   -
@@ -67,6 +69,7 @@ The generator should write the case to the standard output. The output format is
 ```yaml
 problem: generated problem 1
 answer: generated answer 1
+limit: 5
 ```
 
 The output should *NOT* be an array, so the following output is invalid:
