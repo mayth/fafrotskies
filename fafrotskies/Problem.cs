@@ -117,13 +117,13 @@ namespace Fafrotskies
 
                     object enterMessageObj;
                     string enterMessage = null;
-                    if (dict.TryGetValue("enterMessage", out enterMessageObj))
+                    if (dict.TryGetValue("enter_message", out enterMessageObj))
                         enterMessage = (string)enterMessageObj;
 
                     object clearMessageObj;
                     string clearMessage = null;
-                    if (dict.TryGetValue("clearMessage", out clearMessageObj))
-                        clearMessage = (string)clearMessage;
+                    if (dict.TryGetValue("clear_message", out clearMessageObj))
+                        clearMessage = (string)clearMessageObj;
 
                     stages.Add(new Stage(num, enterMessage, clearMessage));
                 }
