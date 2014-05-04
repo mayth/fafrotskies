@@ -72,7 +72,10 @@ namespace Fafrotskies
             using (var writer = new System.IO.StreamWriter(stream))
             using (var reader = new System.IO.StreamReader(stream))
             {
-                writer.WriteLine("Welcome. We are the fafrotskies.");
+                var welcomeMessage = 
+                      @"Welcome. We are the fafrotskies." + Environment.NewLine
+                    + @"Your answers must be terminated by an empty line, don't forget!";
+                writer.WriteLine(welcomeMessage);
                 writer.WriteLine();
                 writer.WriteLine("===== {0} =====", Problem.Name);
                 writer.WriteLine(Problem.Description);
