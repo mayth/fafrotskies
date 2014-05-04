@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using Fafrotskies;
@@ -128,7 +129,8 @@ namespace Fafrotskies
                         writer.WriteLine("#{0}", t.Item1);
                         writer.WriteLine(t.Item2.Problem);
                         writer.Flush();
-                        string answer = await reader.ReadLineAsync(t.Item2.Limit * 1000, cancelToken);
+
+                        var answer = await ReadAnswer(reader, t.Item2.Limit, cancelToken);
                         if (answer == null)
                         {
                             writer.WriteLine("oops...");
@@ -136,6 +138,7 @@ namespace Fafrotskies
                             isCleared = false;
                             break;
                         }
+
                         if (!t.Item2.Check(answer))
                         {
                             writer.WriteLine("wrong answer!");
@@ -159,6 +162,31 @@ namespace Fafrotskies
                     }
                 }
             }
+        }
+
+        private Task<string> ReadAnswer(System.IO.StreamReader reader, int limit, System.Threading.CancellationToken cancelToken)
+        {
+            return Task.Factory.StartNew<string>(() =>
+            {
+                var actualTask = Task.Factory.StartNew<string>(() =>
+                {
+                    var answerBuilder = new StringBuilder();
+                    while (true)
+                    {
+                        var line = reader.ReadLine();
+                        if (string.IsNullOrEmpty(line))
+                            break;
+                        answerBuilder.AppendLine(line.Trim());
+                    }
+
+                    return answerBuilder.ToString();
+                });
+
+                if (actualTask.Wait(limit * 1000, cancelToken))
+                    return actualTask.Result;
+                else
+                    return null;
+            });
         }
     }
 }
