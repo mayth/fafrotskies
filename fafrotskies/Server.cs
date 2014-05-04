@@ -77,39 +77,86 @@ namespace Fafrotskies
                 writer.WriteLine(Problem.Description);
                 writer.WriteLine();
                 writer.Flush();
-                foreach (var c in Problem.Cases.Select((v, i) => new {Index = i, Case = v}))
+
+                var rand = new Random();
+                IEnumerable<Case> cases = null;
+                switch (Problem.CaseGeneratorType)
                 {
-                    if (cancelToken.IsCancellationRequested)
+                    case CaseGeneratorType.List:
+                        cases = Problem.Cases.OrderBy(_ => rand.Next());
+                        break;
+                    case CaseGeneratorType.ExternalCommand:
+                        break;
+                    default:
+                        throw new InvalidOperationException("Unknown generator type.");
+                }
+
+                var answeredCases = 0;
+                foreach (var st in Problem.Stages.Select((v, i) => new { Index = i, Stage = v}))
+                {
+                    writer.WriteLine("Stage #{0}", st.Index + 1);
+                    if (!string.IsNullOrWhiteSpace(st.Stage.EnterMessage))
+                        writer.WriteLine(st.Stage.EnterMessage);
+                    writer.Flush();
+
+                    IEnumerable<Tuple<int, Case>> stageCases;
+                    switch (Problem.CaseGeneratorType)
                     {
-                        writer.WriteLine("Sorry, the server is now shutting down...");
-                        writer.Flush();
-                        cancelToken.ThrowIfCancellationRequested();
+                        case CaseGeneratorType.List:
+                            stageCases = Enumerable.Range(1, st.Stage.NumberOfCases)
+                                .Zip(cases.Skip(answeredCases), (i, v) => Tuple.Create(i, v));
+                            break;
+                        case CaseGeneratorType.ExternalCommand:
+                            stageCases = Enumerable.Range(1, st.Stage.NumberOfCases)
+                                .Select(
+                                    i => Tuple.Create(i, Case.Create(Problem.DefaultLimit, Problem.GeneratorCommand, st.Index + 1))
+                                );
+                            break;
+                        default:
+                            throw new InvalidOperationException("Unknown generator type.");
                     }
 
-                    writer.WriteLine("#{0}", c.Index + 1);
-                    writer.WriteLine(c.Case.Problem);
-                    writer.Flush();
-                    string answer = await reader.ReadLineAsync(c.Case.Limit * 1000, cancelToken);
-                    if (answer == null)
+                    foreach (var t in stageCases)
                     {
-                        writer.WriteLine("oops...");
+                        if (cancelToken.IsCancellationRequested)
+                        {
+                            writer.WriteLine("Sorry, the server is now shutting down...");
+                            writer.Flush();
+                            cancelToken.ThrowIfCancellationRequested();
+                        }
+
+                        writer.WriteLine("#{0}", t.Item1);
+                        writer.WriteLine(t.Item2.Problem);
                         writer.Flush();
-                        isCleared = false;
+                        string answer = await reader.ReadLineAsync(t.Item2.Limit * 1000, cancelToken);
+                        if (answer == null)
+                        {
+                            writer.WriteLine("oops...");
+                            writer.Flush();
+                            isCleared = false;
+                            break;
+                        }
+                        if (!t.Item2.Check(answer))
+                        {
+                            writer.WriteLine("wrong answer!");
+                            writer.Flush();
+                            isCleared = false;
+                            break;
+                        }
+                    }
+
+                    if (isCleared)
+                    {
+                        if (!string.IsNullOrWhiteSpace(st.Stage.ClearMessage))
+                        {
+                            writer.WriteLine(st.Stage.ClearMessage);
+                            writer.Flush();
+                        }
+                    }
+                    else
+                    {
                         break;
                     }
-                    if (!c.Case.Check(answer))
-                    {
-                        writer.WriteLine("wrong answer!");
-                        writer.Flush();
-                        isCleared = false;
-                        break;
-                    }
-                }
-                if (isCleared)
-                {
-                    writer.WriteLine("Congratulations!");
-                    writer.WriteLine("Flag is {0}", Problem.Flag);
-                    writer.Flush();
                 }
             }
         }

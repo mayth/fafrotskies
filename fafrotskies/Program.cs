@@ -28,7 +28,6 @@ namespace Fafrotskies
 
             Console.WriteLine("Name: {0}", problem.Name);
             Console.WriteLine("Desc: {0}", problem.Description);
-            Console.WriteLine("Flag: {0}", problem.Flag);
             Console.WriteLine("Port: {0}", port);
             var server = new Server(port, problem);
             server.Start();

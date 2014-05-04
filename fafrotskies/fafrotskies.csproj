@@ -48,6 +48,8 @@
     <Compile Include="MatchType.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="StreamReaderEx.cs" />
+    <Compile Include="Stage.cs" />
+    <Compile Include="CaseGeneratorType.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

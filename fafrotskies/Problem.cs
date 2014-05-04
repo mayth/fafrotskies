@@ -21,24 +21,65 @@ namespace Fafrotskies
             get { return description; }
         }
 
-        private readonly string flag;
-        public string Flag
+        private readonly List<Stage> stages;
+        public IEnumerable<Stage> Stages
         {
-            get { return flag; }
+            get { return stages; }
         }
 
-        private List<Case> cases;
-        public IList<Case> Cases
+        private readonly CaseGeneratorType caseGeneratorType;
+        public CaseGeneratorType CaseGeneratorType
         {
-            get { return cases; }
+            get { return caseGeneratorType; }
         }
 
-        private Problem(string name, string description, string flag, IList<Case> cases)
+        private readonly List<Case> cases;
+        public IEnumerable<Case> Cases
+        {
+            get
+            {
+                switch (CaseGeneratorType)
+                {
+                    case CaseGeneratorType.List:
+                        return cases;
+                    case CaseGeneratorType.ExternalCommand:
+                        throw new InvalidOperationException("Cases list is not available for problem with external generator.");
+                    default:
+                        throw new InvalidOperationException("Unknown generator type.");
+                }
+            }
+        }
+
+        private readonly string generatorCommand;
+        public string GeneratorCommand
+        {
+            get
+            {
+                if (CaseGeneratorType != CaseGeneratorType.ExternalCommand)
+                    throw new InvalidOperationException();
+                return generatorCommand;
+            }
+        }
+
+        private Problem(string name, string description, IEnumerable<Stage> stages)
         {
             this.name = name;
             this.description = description;
-            this.flag = flag;
+            this.stages = new List<Stage>(stages);
+        }
+
+        private Problem(string name, string description, IEnumerable<Stage> stages, IList<Case> cases)
+            : this(name, description, stages)
+        {
+            this.caseGeneratorType = CaseGeneratorType.List;
             this.cases = new List<Case>(cases);
+        }
+
+        private Problem(string name, string description, IEnumerable<Stage> stages, string generatorCommand)
+            : this(name, description, stages)
+        {
+            this.caseGeneratorType = CaseGeneratorType.ExternalCommand;
+            this.generatorCommand = generatorCommand;
         }
 
         public static Problem Load(string path)
@@ -62,11 +103,51 @@ namespace Fafrotskies
             else
                 limit = DefaultLimit;
 
+            var stages = new List<Stage>();
+            var stagesObj = obj["stages"] as List<object>;
+            if (stagesObj != null)
+            {
+                foreach (var st in stagesObj)
+                {
+                    var dict = st as Dictionary<object, object>;
+                    if (dict == null)
+                        throw new Exception("stage specification invalid (it must be a hash)");
+
+                    int num = int.Parse((string)dict["num"]);
+
+                    object enterMessageObj;
+                    string enterMessage = null;
+                    if (dict.TryGetValue("enterMessage", out enterMessageObj))
+                        enterMessage = (string)enterMessageObj;
+
+                    object clearMessageObj;
+                    string clearMessage = null;
+                    if (dict.TryGetValue("clearMessage", out clearMessageObj))
+                        clearMessage = (string)clearMessage;
+
+                    stages.Add(new Stage(num, enterMessage, clearMessage));
+                }
+            }
+
+            // try parse `cases` as List
             var yamlCases = obj["cases"] as List<object>;
             if (yamlCases == null)
             {
-                throw new InvalidOperationException("The given yaml's `cases` is not list.");
+                // try parse `cases` as Hash
+                var yamlCasesHash = obj["cases"] as Dictionary<object, object>;
+
+                if (yamlCasesHash == null)
+                    throw new InvalidOperationException("The given yaml's `cases` is not list.");
+
+                // if successfully parsed as Hash, it has external generator.
+                return new Problem(
+                    (string)obj["name"],
+                    (string)obj["description"],
+                    stages,
+                    (string)yamlCasesHash["cmd"]
+                );
             }
+            // if successfully parsed as List, it has list of cases.
             var cases = new List<Case>();
             foreach (var dict in yamlCases)
             {
@@ -85,7 +166,7 @@ namespace Fafrotskies
 
                 cases.Add(Case.Create(((string)d["problem"]).Trim(), d["answer"], caseLimit));
             }
-            return new Problem((string)obj["name"], (string)obj["description"], (string)obj["flag"], cases);
+            return new Problem((string)obj["name"], (string)obj["description"], stages, cases);
         }
     }
 }
